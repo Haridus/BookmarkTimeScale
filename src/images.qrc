@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/loader_96.gif</file>
+        <file>images/standardbutton-apply-128.png</file>
+    </qresource>
+</RCC>
