@@ -10,7 +10,7 @@ typedef std::vector<Bookmark> InternalData;
 
 bool operator<(const Bookmark& b1, const Bookmark& b2)
 {
-    bool result = (b1.timestamp < b2.timestamp) || ( (b1.timestamp == b2.timestamp) && (b1.duration <= b2.duration));
+    bool result = (b1.timestamp < b2.timestamp) || ( (b1.timestamp == b2.timestamp) && (b1.duration < b2.duration));
     return result;
 }
 
@@ -36,10 +36,8 @@ void BookmarkGeneratorThread::run()
 
     QMutexLocker lock(&pContext->mutex);
     InternalData* dataptr = (InternalData*)pContext->dataptr;
-    dataptr->clear();
-
-    dataptr->resize( mCount );
-    for( int i = 0; i < mCount; i++ )
+	
+    for( int i = 0; i < dataptr->size(); i++ )
     {
         Bookmark& bookmark = dataptr->at(i);
         bookmark.name = QString("%1").arg(i);
@@ -163,9 +161,11 @@ void CustomBookmarkModel::generate(int n)
         if( d_ptr->generatorThread ){
             delete d_ptr->generatorThread;
         }
+		beginResetModel();
+		d_ptr->data.clear();
+		d_ptr->data.resize( n );
         d_ptr->generatorThread = new BookmarkGeneratorThread(&d_ptr->generatorContext, n);
         connect(d_ptr->generatorThread,SIGNAL(finished()),this,SLOT(onGenerationFinish()));
-        beginResetModel();
         d_ptr->generatorThread->start();
     }
 }
